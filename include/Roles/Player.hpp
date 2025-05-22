@@ -2,7 +2,12 @@
 #define PLAYER_HPP
 
 
+class Player {
 
+    
+
+
+}
 
 
 
