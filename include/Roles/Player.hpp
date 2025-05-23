@@ -16,7 +16,7 @@ namespace coup {
             bool extra_turn = false; // to know if the player has an extra turn.
             bool is_sanctioned = false; // if the player is sanctioned
             bool mustCoup = false; // if has 10 or more coins must do a coup.
-            bool arrestBlocked = false; // if the player can arrest.
+            bool cant_arrest = false; // if a spy prevented from a player use arrest action.
         public:
             /**
              * @brief Construct a new Player object
@@ -131,7 +131,20 @@ namespace coup {
              */
             void setMustCoup(bool c);
 
-            void blockArrest()
+            /**
+             * @brief if player has been blocked from arresting by a spy set to true
+             * else - false.
+             * @param p - true or false by argument,
+             */
+            void setCantArrest(bool p);
+
+            /**
+             * @brief Get the Cant Arrest Status object
+             * 
+             * @return true - if can arrest and not blocked by a spy
+             * @return false  - if cannot arrest and blocked by a spy
+             */
+            bool getCantArrestStatus() const;
 
 
             /********************

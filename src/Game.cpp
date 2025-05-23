@@ -9,7 +9,7 @@ namespace coup {
      *  player_list - empty , each time adding a player to the game adding to the list aw
      *  last_arrested - to have an indication of the last player that has been arrested
      *  current_player_index - the current player that is playing
-     *  has_stated - if the game has started we cant add more players.
+     *  has_started - if the game has started we cant add more players.
      */
     Game::Game() 
     : players_list{} , last_arrested(nullptr) , current_player_index(0),has_started(false), active_players(0)
@@ -101,7 +101,9 @@ namespace coup {
         //we have to clear all blocks when moving to next turn ,
         //but we still havent implemented it yet.
         p->removeSanction();
-        p->clearArrestBlock();
+        //if the player that is has played was arrest-blocked than 
+        //we will able him to use it again.
+        p->setCantArrest(false);
 
         //if next player has 10 or more coins we will block all other actions except coup.
         Player* next = players_list[current_player_index];
@@ -133,5 +135,6 @@ namespace coup {
     void Game::updateLastArrested(Player* p){
         this->last_arrested = p;
     }
+
 
 }

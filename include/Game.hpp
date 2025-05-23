@@ -7,11 +7,11 @@ namespace coup {
     class Player;
     class Game {
         private:
-            std::vector<Player*> players_list;
+            std::vector<Player*> players_list; //a list of all players.
              Player* last_arrested = nullptr; //last player arrested
-             size_t current_player_index;
-             bool has_started;
-             int active_players;
+             size_t current_player_index; //which player is playing rn.
+             bool has_started; // indication if the game has started already.
+             int active_players; // active players counter
         
         public:
             /**
@@ -77,6 +77,8 @@ namespace coup {
              * @return Player* 
              */
             void updateLastArrested(Player* p);
+
+
     };
 
 
