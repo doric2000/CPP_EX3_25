@@ -13,6 +13,7 @@ namespace coup {
             std::string name; // each player has a name
             int coins_amount = 0; //each player starts with 0 coins.
             bool active = true; //in indication if the player is active.
+            bool extra_turn = false;
         public:
             /**
              * @brief Construct a new Player object
@@ -43,12 +44,35 @@ namespace coup {
             int coins() const;
 
             /**
+             * @brief Returns true if the player has an active extra turn
+             * 
+             * @return true 
+             * @return false 
+             */
+            bool hasExtraTurn() const;
+
+
+            /**
+             * @brief clearing the extra turn after using it
+             * 
+             */
+            void clearExtraTurn();
+
+            
+            /**
              * @brief Returns true if the Player is still in the game.
              * 
              * @return true - if player still plays.
              * @return false - if the player doesnt play anymore.
              */
             bool isActive() const;
+
+            /**
+             * @brief Set a player to be active.
+             * 
+             * @param active 
+             */
+            void setActive();
 
             /**
              * @brief eliminates the player from the game.
