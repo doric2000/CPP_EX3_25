@@ -13,7 +13,10 @@ namespace coup {
             std::string name; // each player has a name
             int coins_amount = 0; //each player starts with 0 coins.
             bool active = true; //in indication if the player is active.
-            bool extra_turn = false;
+            bool extra_turn = false; // to know if the player has an extra turn.
+            bool is_sanctioned = false; // if the player is sanctioned
+            bool mustCoup = false; // if has 10 or more coins must do a coup.
+            bool arrestBlocked = false; // if the player can arrest.
         public:
             /**
              * @brief Construct a new Player object
@@ -44,6 +47,22 @@ namespace coup {
             int coins() const;
 
             /**
+             * @brief add c coins to the current Player balance.
+             * 
+             * @param c - coins to add
+             */
+            void incrementCoins(int c);
+
+
+            /**
+             * @brief takes c coins from the current Player balance.
+             * 
+             * @param c - coins to take
+             */
+            void decrementCoins(int c);
+
+
+            /**
              * @brief Returns true if the player has an active extra turn
              * 
              * @return true 
@@ -58,7 +77,7 @@ namespace coup {
              */
             void clearExtraTurn();
 
-            
+
             /**
              * @brief Returns true if the Player is still in the game.
              * 
@@ -66,6 +85,15 @@ namespace coup {
              * @return false - if the player doesnt play anymore.
              */
             bool isActive() const;
+
+            /**
+             * @brief Returns true if the player has a sanction.
+             * 
+             * @return true - if has
+             * @return false - if does not have.
+             */
+            bool isSanctioned() const;
+        
 
             /**
              * @brief Set a player to be active.
@@ -86,6 +114,24 @@ namespace coup {
              * @return Game& 
              */
             Game& getGame() const;
+
+            /**
+             * @brief Return if the player must do a coup if has 10 or more Coins.
+             * 
+             * @return true - if must coup
+             * @return false - if there is no necessery.
+             */
+             
+            bool isMustCoup() const;
+
+            /**
+             * @brief Set the Must Coup;
+             * 
+             * @param c - must coup or not :D
+             */
+            void setMustCoup(bool c);
+
+            void blockArrest()
 
 
             /********************
@@ -140,42 +186,35 @@ namespace coup {
             /**
              * @brief the player picks another player and eliminates it from the game.
              * Can only be Blocked in certain conditions.
+             * most be done if a player has 10 or more Coins.
              * COST: 7 coins.
-             * @param target 
+             * PREVENT: General can prevent for 5 Coins , agains him or other player.
+             * @param target - who will be eliminated :D
              */
             virtual void coup(Player& target); 
 
+            /**
+             * @brief undo a specific action.
+             * USE_BY: judge can undo a bribe , Governor can undo tax.
+             * @param target - the player to undo its action.
+             */
             virtual void undo(Player& target){
                 throw std::runtime_error("This role cannot undo actions");
             } 
+
+            /**
+             * @brief Applies sanction on a player , we will have to modify it no baron.
+             * 
+             */
+            virtual void applySanction();
+
+
+            /**
+             * @brief removes sanction on a player , we will have to modify it no baron.
+             * 
+             */
+            void removeSanction();
     };
 
-
-};
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+}
 #endif // PLAYER_HPP

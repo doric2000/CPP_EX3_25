@@ -63,6 +63,20 @@ namespace coup {
              * @return std::string 
              */
             std::string winner() const;
+
+            /**
+             * @brief Get the Last player that has been Arrested .
+             * 
+             * @return Player* 
+             */
+            Player* getLastArrested() const;
+
+            /**
+             * @brief update the Last player that has been Arrested.
+             * 
+             * @return Player* 
+             */
+            void updateLastArrested(Player* p);
     };
 
 

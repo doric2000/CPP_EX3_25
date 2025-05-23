@@ -19,6 +19,14 @@ namespace coup {
         return this->coins_amount;
     }
 
+    void Player::incrementCoins(int c){
+        this->coins_amount += c;
+    }
+
+    void Player::decrementCoins(int c){
+        this->coins_amount -= c;
+    }
+
     bool Player::isActive() const{
         return this->active;
     }
@@ -42,19 +50,50 @@ namespace coup {
     void Player::clearExtraTurn(){
         extra_turn = false;
     }
+
+    void Player::applySanction() {
+        this->is_sanctioned = true;
+    }
+
+    void Player::removeSanction() {
+        this->is_sanctioned = false;
+    }
+
+    bool Player::isSanctioned() const{
+        return this->is_sanctioned;
+    }
+
+    bool Player::isMustCoup() const { 
+        return mustCoup; 
+    }
+    void Player::setMustCoup(bool v) {
+        mustCoup = v; 
+    }
+
     
 
     void Player::gather(){
         if (game.turn() != name)
              throw std::runtime_error("Not your turn");
+        if (this->isSanctioned())
+            throw std::runtime_error("Player cant use Gather while being sanctioned");
+        if (mustCoup) {
+            throw std::runtime_error("Player must perform coup when holding 10 or more coins");
+        }
         // if there is sanction no:
         coins_amount++;
         game.nextTurn(); 
     }
 
+    //governador will use it different
     void Player::tax() {
         if (game.turn() != name) 
             throw std::runtime_error("Not your turn");
+        if (this->isSanctioned())
+            throw std::runtime_error("Player cant use Tax while being sanctioned");
+        if (mustCoup) {
+            throw std::runtime_error("Player must perform coup when holding 10 or more coins");
+        }
         //if it hasnt been blocked:
        this->coins_amount += 2;      
        game.nextTurn();
@@ -63,6 +102,9 @@ namespace coup {
     void Player::bribe(){
         if (game.turn() != name) 
             throw std::runtime_error("Not your turn");
+        if (mustCoup) {
+            throw std::runtime_error("Player must perform coup when holding 10 or more coins");
+        }
         //check if the player has 4 coins
         if (this->coins() < 4)
             throw std::runtime_error("Not enough coins to bribe");   
@@ -76,9 +118,72 @@ namespace coup {
     void Player::arrest(Player& target) {
         if (game.turn() != name) 
             throw std::runtime_error("Not your turn");
-        
-        // if hasnt been used twice
 
+        if (mustCoup) {
+            throw std::runtime_error("Player must perform coup when holding 10 or more coins");
+        }
+
+        if (target.cantArrest()){
+            throw std::runtime_error("Spy prevented you from using Arrest");
+        }
+        
+        if (!target.isActive()) 
+            throw std::runtime_error("Target is not active");
+
+        // if hasnt been used twice
+        if (game.getLastArrested() == &target)
+        {
+            throw std::runtime_error("Cannot arrest the same player twice in a row");
+        }
+
+        
+        if (target.coins() == 0){
+            throw std::runtime_error("Cannot arrest a Player With 0 coins.");
+        }
+            
+        target.decrementCoins(1);
+        this->incrementCoins(1);
+        game.updateLastArrested(&target);  
+        game.nextTurn();
+    }
+
+    void Player::sanction(Player& target){
+        if (game.turn() != name) 
+            throw std::runtime_error("Not your turn");
+
+        if (mustCoup) {
+            throw std::runtime_error("Player must perform coup when holding 10 or more coins");
+        }
+        
+        if (!target.isActive()) 
+            throw std::runtime_error("Target is not active");
+                 
+        if (this->coins() < 3){
+            throw std::runtime_error("Not enough coins to sanction");
+        }
+        if (target.isSanctioned()){ 
+            throw std::runtime_error("Target already under Sanction");
+        }
+
+        this->decrementCoins(3);
+        target.applySanction(); //baron will act different
+        game.nextTurn();
+    }
+
+    //general can prevent it
+    void Player::coup(Player& target){
+        if (game.turn() != name) 
+            throw std::runtime_error("Not your turn");
+        
+        if (!target.isActive()) 
+            throw std::runtime_error("Target is not active");
+
+        if (this->coins() < 10)
+            throw std::runtime_error("Not enough coins to Coup");
+        
+        this->decrementCoins(7);
+        target.eliminatePlayer();
+        game.nextTurn();
     }
 
 

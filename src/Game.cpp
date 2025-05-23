@@ -89,7 +89,7 @@ namespace coup {
             return;
         }
 
-        for (int step = 1; step < players_list.size(); ++step)
+        for (int step = 1; step <= players_list.size(); ++step)
         {
             int cand = (current_player_index+step) % players_list.size();
             if (players_list[cand]->isActive()){
@@ -100,13 +100,38 @@ namespace coup {
 
         //we have to clear all blocks when moving to next turn ,
         //but we still havent implemented it yet.
+        p->removeSanction();
+        p->clearArrestBlock();
+
+        //if next player has 10 or more coins we will block all other actions except coup.
+        Player* next = players_list[current_player_index];
+        if (next->coins() >= 10) {
+            next->setMustCoup(true);
+        } else {
+            next->setMustCoup(false);
+        }
        
     }
 
+    std::string Game::winner() const{
+        if (active_players !=1)
+            throw std::runtime_error("There is not a Winner yet.");
+        
+        for (Player* p : players_list)
+        {
+            if (p->isActive())
+                return p->getName();
+        }
+        // if there is an internal error and we have accidently more than 1 active player hahaha
+        throw std::runtime_error("Internal error: active_players out of sync");
+    }
 
+    Player* Game::getLastArrested() const {
+        return this->last_arrested;
+    }
 
-
-
-
+    void Game::updateLastArrested(Player* p){
+        this->last_arrested = p;
+    }
 
 }
