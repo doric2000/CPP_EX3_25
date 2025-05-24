@@ -11,7 +11,7 @@ namespace coup {
              Player* last_arrested = nullptr; //last player arrested
              size_t current_player_index; //which player is playing rn.
              bool has_started; // indication if the game has started already.
-             int active_players; // active players counter
+             int active_players; // active players counter.
         
         public:
             /**
@@ -83,8 +83,6 @@ namespace coup {
 
 
 };
-
-
 
 
 #endif // GAME_HPP

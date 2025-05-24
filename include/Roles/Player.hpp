@@ -5,6 +5,18 @@
 
 namespace coup {
 
+    enum class ActionType {
+    None,
+    Gather,
+    Tax,
+    Bribe,
+    Arrest,
+    Sanction,
+    Coup,
+    Invest,
+    BlockTax,
+    BlockArrest
+};
 
     class Player {
 
@@ -17,6 +29,7 @@ namespace coup {
             bool is_sanctioned = false; // if the player is sanctioned
             bool mustCoup = false; // if has 10 or more coins must do a coup.
             bool cant_arrest = false; // if a spy prevented from a player use arrest action.
+            ActionType last_action = ActionType::None; // to have an indication of last action of each player
         public:
             /**
              * @brief Construct a new Player object
@@ -24,7 +37,7 @@ namespace coup {
              * @param game - a reference to the game
              * @param name - the name of the player.
              */
-            Player(Game& game , std::string& name);
+            Player(Game& game , const std::string& name);
         
             /**
              * @brief Destroy the Player object
@@ -146,6 +159,25 @@ namespace coup {
              */
             bool getCantArrestStatus() const;
 
+            /**
+             * @brief Get the last action of a player.
+             * 
+             * @return ActionType 
+             */
+            ActionType getLastAction() const;
+
+            /**
+             * @brief Set the Last Action of a player to a
+             * 
+             * @param a - last action.
+             */
+            void setLastAction(ActionType a);
+
+            /**
+             * @brief clear the last action of a player (None)
+             * 
+             */
+            void clearLastAction();
 
             /********************
              * VIRTUAL FUNCTIONS
@@ -216,7 +248,7 @@ namespace coup {
             } 
 
             /**
-             * @brief Applies sanction on a player , we will have to modify it no baron.
+             * @brief Applies sanction on a player , we will have to modify it on baron.
              * 
              */
             virtual void applySanction();

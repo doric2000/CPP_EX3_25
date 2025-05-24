@@ -6,6 +6,10 @@
 namespace coup {
 
     class Governor : public Player {
+        private:
+        
+        bool blocked_tax = false;
+        
         public:
         /**
          * @brief Construct a new Governor Player
@@ -20,6 +24,21 @@ namespace coup {
          * 
          */
         ~Governor();
+
+        /**
+         * @brief has the governor blocked Tax for other player this turn?
+         * 
+         * @return true -yep
+         * @return false - nope
+         */
+        bool hasBlockedTax() const;
+
+        /**
+         * @brief set has blocked tax to false.
+         * 
+         */
+
+        void resetBlockTax();
         
         /**
          * @brief instead of getting 2 coins from the deck , a governor gets 3.
@@ -28,8 +47,8 @@ namespace coup {
         void tax() override;
 
         /**
-         * @brief can undo tax actions of another players.
-         * 
+         * @brief A Governor can undo tax actions of another players.
+         * This Action does not spend a turn and does not have a cost.
          * @param target 
          */
         void undo(Player& target) override;

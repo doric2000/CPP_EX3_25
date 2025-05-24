@@ -1,5 +1,7 @@
 #include "../include/Game.hpp"
 #include "../include/Roles/Player.hpp"
+#include "../include/Roles/Governor.hpp"
+#include "../include/Roles/Spy.hpp"
 #include <stdexcept>
 
 namespace coup {
@@ -101,9 +103,21 @@ namespace coup {
         //we have to clear all blocks when moving to next turn ,
         //but we still havent implemented it yet.
         p->removeSanction();
-        //if the player that is has played was arrest-blocked than 
+        //if the player that has played was arrest-blocked than 
         //we will able him to use it again.
         p->setCantArrest(false);
+
+        //if the player that has played was a governor we should able him to block tax
+        //again after its turn over.
+        if (auto* gov = dynamic_cast<Governor*>(p)) {
+            gov->resetBlockTax();
+        }
+        //if the player that has played was a Spy we should able him to block arrest
+        //again after its turn over.
+        if (auto* spy = dynamic_cast<Spy*>(p)) {
+            spy->resetArrestPreventBlock();
+        }
+
 
         //if next player has 10 or more coins we will block all other actions except coup.
         Player* next = players_list[current_player_index];

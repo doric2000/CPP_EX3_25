@@ -6,6 +6,10 @@
 namespace coup {
 
     class Spy : public Player {
+        private:
+            
+            bool prevent_arrest_next_turn= false;
+        
         public:
         /**
          * @brief Construct a new Spy Player
@@ -22,7 +26,7 @@ namespace coup {
         ~Spy();
         
         /**
-         * @brief A spy can see the coins amount of another player, 
+         * @brief A spy can see the coins amount of all other players, 
          * it doesnt count as a turn.
          * COST: no cost.
          * 
@@ -37,6 +41,12 @@ namespace coup {
          * @param target - the player that we would like to prevent from using arrest.
          */
         void preventArrest(Player& target);
+
+
+        void resetArrestPreventBlock()
+        {
+            this->prevent_arrest_next_turn = false;
+        }
 
     };
 }

@@ -29,6 +29,7 @@ namespace coup {
          */
         void invest();
 
+        void applySanction() override;
         
     };
 }

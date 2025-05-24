@@ -4,10 +4,10 @@
 
 namespace coup {
 
-    Player::Player(Game& game , std::string& name) 
+    Player::Player(Game& game , const std::string& name) 
     : game(game),name(name),coins_amount(0),
     active(true),extra_turn(false),is_sanctioned(false),
-    mustCoup(false),cant_arrest(false)
+    mustCoup(false),cant_arrest(false),last_action(ActionType::None)
     {
                 
         game.addPlayer(this); //adding a player to our game after initialization
@@ -77,11 +77,20 @@ namespace coup {
     bool Player::getCantArrestStatus() const {
         return cant_arrest;
     }
+    ActionType Player::getLastAction() const {
+         return last_action; 
+    }
+    void Player::setLastAction(ActionType a) { 
+        last_action = a; 
+    }
+    void Player::clearLastAction() {
+        last_action = ActionType::None; 
+    }
 
     
 
     void Player::gather(){
-        if (game.turn() != name)
+        if (game.turn() != this->getName()) 
              throw std::runtime_error("Not your turn");
         if (this->isSanctioned())
             throw std::runtime_error("Player cant use Gather while being sanctioned");
@@ -90,12 +99,13 @@ namespace coup {
         }
         // if there is sanction no:
         coins_amount++;
+        setLastAction(ActionType::Gather);
         game.nextTurn(); 
     }
 
     //governador will use it different
     void Player::tax() {
-        if (game.turn() != name) 
+        if (game.turn() != this->getName())  
             throw std::runtime_error("Not your turn");
         if (this->isSanctioned())
             throw std::runtime_error("Player cant use Tax while being sanctioned");
@@ -103,12 +113,13 @@ namespace coup {
             throw std::runtime_error("Player must perform coup when holding 10 or more coins");
         }
         //if it hasnt been blocked:
-       this->coins_amount += 2;      
+       this->coins_amount += 2;
+       setLastAction(ActionType::Tax);      
        game.nextTurn();
     }
 
     void Player::bribe(){
-        if (game.turn() != name) 
+        if (game.turn() != this->getName()) 
             throw std::runtime_error("Not your turn");
         if (this->isMustCoup()) {
             throw std::runtime_error("Player must perform coup when holding 10 or more coins");
@@ -116,15 +127,14 @@ namespace coup {
         //check if the player has 4 coins
         if (this->coins() < 4)
             throw std::runtime_error("Not enough coins to bribe");   
-        else{
-            coins_amount -=4;
-            extra_turn = true;
-        }
-            
+        
+        coins_amount -=4;
+        setLastAction(ActionType::Bribe);
+        extra_turn = true;   
     }
 
     void Player::arrest(Player& target) {
-        if (game.turn() != name) 
+        if (game.turn() != this->getName()) 
             throw std::runtime_error("Not your turn");
 
         if (this->isMustCoup()) {
@@ -151,12 +161,13 @@ namespace coup {
             
         target.decrementCoins(1);
         this->incrementCoins(1);
-        game.updateLastArrested(&target);  
+        game.updateLastArrested(&target);
+        setLastAction(ActionType::Arrest);  
         game.nextTurn();
     }
 
     void Player::sanction(Player& target){
-        if (game.turn() != name) 
+        if (game.turn() != this->getName())  
             throw std::runtime_error("Not your turn");
 
         if (this->isMustCoup()) {
@@ -175,12 +186,13 @@ namespace coup {
 
         this->decrementCoins(3);
         target.applySanction(); //baron will act different
+        setLastAction(ActionType::Sanction);
         game.nextTurn();
     }
 
     //general can prevent it
     void Player::coup(Player& target){
-        if (game.turn() != name) 
+        if (game.turn() != this->getName())  
             throw std::runtime_error("Not your turn");
         
         if (!target.isActive()) 
@@ -194,6 +206,7 @@ namespace coup {
         
         this->decrementCoins(7);
         target.eliminatePlayer();
+        setLastAction(ActionType::Coup);
         game.nextTurn();
     }
 
