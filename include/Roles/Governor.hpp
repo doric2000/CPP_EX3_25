@@ -26,6 +26,15 @@ namespace coup {
         ~Governor();
 
         /**
+         * @brief return the name of the role of the player.
+         * 
+         * @return std::string 
+         */
+        std::string role() const {
+            return "Governor";
+        }
+
+        /**
          * @brief has the governor blocked Tax for other player this turn?
          * 
          * @return true -yep

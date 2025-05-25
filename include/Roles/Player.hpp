@@ -1,9 +1,15 @@
 #ifndef PLAYER_HPP
 #define PLAYER_HPP
 #include <string>
+#include "../../include/Game.hpp"
+#include <stdexcept>
+#include <vector>
+
 
 
 namespace coup {
+
+    class Game;
 
     enum class ActionType {
     None,
@@ -188,7 +194,7 @@ namespace coup {
               * 
               * @return std::string 
             */
-            virtual std::string role() const = 0;
+            virtual std::string role() const;
 
             /**
              * @brief the player gets 1 coin from the deck. 

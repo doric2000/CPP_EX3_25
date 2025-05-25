@@ -11,6 +11,8 @@ namespace coup {
 
     }
 
+    Baron::~Baron() {}
+
     void Baron::invest() {
         if (game.turn() != this->getName()) 
             throw std::runtime_error("Not your turn");

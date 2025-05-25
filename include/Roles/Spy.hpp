@@ -24,6 +24,15 @@ namespace coup {
          * 
          */
         ~Spy();
+
+        /**
+         * @brief return the name of the role of the player.
+         * 
+         * @return std::string 
+         */
+        std::string role() const {
+            return "Spy";
+        }
         
         /**
          * @brief A spy can see the coins amount of all other players, 
@@ -42,7 +51,11 @@ namespace coup {
          */
         void preventArrest(Player& target);
 
-
+        /**
+         * @brief reset the arrest prevent block on a Spy
+         *  that  block in the last turn.
+         * 
+         */
         void resetArrestPreventBlock()
         {
             this->prevent_arrest_next_turn = false;

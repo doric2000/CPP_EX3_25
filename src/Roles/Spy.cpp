@@ -11,6 +11,8 @@ namespace coup {
         prevent_arrest_next_turn = false;
     }
 
+    Spy::~Spy() {}
+
     int Spy::inspectCoins(const Player& target) const {
         if (game.turn() != this->getName()) 
             throw std::runtime_error("Not your turn");

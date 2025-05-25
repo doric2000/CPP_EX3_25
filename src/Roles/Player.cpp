@@ -1,8 +1,8 @@
 #include "../../include/Roles/Player.hpp"
-#include "../../include/Game.hpp"
 #include <stdexcept>
 
 namespace coup {
+
 
     Player::Player(Game& game , const std::string& name) 
     : game(game),name(name),coins_amount(0),
@@ -12,6 +12,7 @@ namespace coup {
                 
         game.addPlayer(this); //adding a player to our game after initialization
     }
+
     
     std::string Player::getName() const{
         return this->name;
@@ -128,7 +129,11 @@ namespace coup {
         if (this->coins() < 4)
             throw std::runtime_error("Not enough coins to bribe");   
         
-        coins_amount -=4;
+        this->decrementCoins(4);
+        if (game.dispatchBribeAttempt()){
+            game.nextTurn();
+            return;
+        }
         setLastAction(ActionType::Bribe);
         extra_turn = true;   
     }
@@ -158,9 +163,12 @@ namespace coup {
         if (target.coins() == 0){
             throw std::runtime_error("Cannot arrest a Player With 0 coins.");
         }
-            
-        target.decrementCoins(1);
-        this->incrementCoins(1);
+        if (target.getName() == "Merchant")
+            target.decrementCoins(2);
+        else{
+            target.decrementCoins(1);
+            this->incrementCoins(1);
+        }
         game.updateLastArrested(&target);
         setLastAction(ActionType::Arrest);  
         game.nextTurn();
@@ -185,6 +193,8 @@ namespace coup {
         }
 
         this->decrementCoins(3);
+        if (target.getName() == "Judge")
+            this->decrementCoins(1);
         target.applySanction(); //baron will act different
         setLastAction(ActionType::Sanction);
         game.nextTurn();
@@ -205,6 +215,11 @@ namespace coup {
         //also keep the option open.
         
         this->decrementCoins(7);
+        // we make an event that will apply all general to block the coup
+        if (game.dispatchCoupAttempt(target)){
+            game.nextTurn();
+            return;
+        }
         target.eliminatePlayer();
         setLastAction(ActionType::Coup);
         game.nextTurn();

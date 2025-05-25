@@ -2,6 +2,11 @@
 #include "../include/Roles/Player.hpp"
 #include "../include/Roles/Governor.hpp"
 #include "../include/Roles/Spy.hpp"
+#include "../include/Roles/General.hpp"
+#include "../include/Roles/Judge.hpp"
+#include "../include/Roles/Merchant.hpp"
+
+
 #include <stdexcept>
 
 namespace coup {
@@ -91,7 +96,8 @@ namespace coup {
             return;
         }
 
-        for (int step = 1; step <= players_list.size(); ++step)
+
+        for (size_t step = 1; step <= players_list.size(); ++step)
         {
             int cand = (current_player_index+step) % players_list.size();
             if (players_list[cand]->isActive()){
@@ -99,6 +105,7 @@ namespace coup {
                 break;
             }
         }
+
 
         //we have to clear all blocks when moving to next turn ,
         //but we still havent implemented it yet.
@@ -117,7 +124,22 @@ namespace coup {
         if (auto* spy = dynamic_cast<Spy*>(p)) {
             spy->resetArrestPreventBlock();
         }
-
+        //if the player that has played was a General we should able him to prevent a coup 
+        //again after its turn over.
+        if (auto* Gen = dynamic_cast<General*>(p)) {
+            Gen->resetPreventCoupBlock();
+        }
+        //if the player that has played was a Judge we should able him to prevent a Bribe 
+        //again after its turn over.
+        if (auto* jud = dynamic_cast<Judge*>(p)) {
+            jud->resetPreventBribeBlock();
+        }
+        
+         //if the player that has played was a Merchant we should able him to take a new Coins
+        //again if has >=3 coins on its next turn.
+        if (auto* mer = dynamic_cast<Merchant*>(p)) {
+            mer->reset_got_new_coin();
+        }
 
         //if next player has 10 or more coins we will block all other actions except coup.
         Player* next = players_list[current_player_index];
@@ -125,6 +147,10 @@ namespace coup {
             next->setMustCoup(true);
         } else {
             next->setMustCoup(false);
+        }
+        // checks if the player to be play is a Merchant , if it is we should add it an Extra Coin.
+        if (auto* n = dynamic_cast<Merchant*>(next)) {
+            n->CoinOnNewTurn();
         }
        
     }
@@ -149,6 +175,62 @@ namespace coup {
     void Game::updateLastArrested(Player* p){
         this->last_arrested = p;
     }
+
+    bool Game::dispatchCoupAttempt(Player& target) {
+        //check if target is active
+        if (!target.isActive()) 
+            throw std::runtime_error("Target is not active");
+        
+        for (Player* p : players_list) {
+            if (!p->isActive()) // if the player is not active , go the the next one.
+                continue;
+            
+            auto* gen = dynamic_cast<General*>(p);
+            if (!gen) 
+                continue;
+            
+            if (gen->coins() < 5 || gen->hasBlockedCoupThisTurn())
+                continue;
+
+             //bool answer = gui.askYesNo(
+            //std::string("General ") + gen->getName() +
+            //", block Coup on " + target.getName() + " for 5 coins?");
+            
+           //if (!answer)
+            //    continue;
+            
+            gen->PreventCoup();
+            return true;
+        }
+    return false;  // לא נחסם על־ידי אף General
+    }
+
+    bool Game::dispatchBribeAttempt() {
+        for (Player* p : players_list) {
+            if (!p->isActive()) // if the player is not active , go the the next one.
+                continue;
+            
+            auto* jud = dynamic_cast<Judge*>(p);
+            if (!jud) 
+                continue;
+            
+            if (jud->hasBlockedBribeThisTurn())
+                continue;
+
+             //bool answer = gui.askYesNo(
+            //std::string("Judge ") + jud->getName() +
+            //", block Bribe on " + target.getName() + " ?");
+            
+           //if (!answer)
+            //    continue;
+            
+            jud->PreventBribe();
+            return true;
+        }
+    return false;  // HASNT BLOCKED BY ANY JUDGE
+}
+
+
 
 
 }

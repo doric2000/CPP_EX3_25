@@ -6,6 +6,9 @@
 namespace coup {
 
     class General : public Player {
+        private:
+            bool prevented_coup_this_turn = false;
+        
         public:
         /**
          * @brief Construct a new General Player
@@ -20,15 +23,37 @@ namespace coup {
          * 
          */
         ~General();
+
+        /**
+         * @brief return the name of the role of the player.
+         * 
+         * @return std::string 
+         */
+        std::string role() const {
+            return "General";
+        }
         
         /**
-         * @brief A general can pay 5 Coins to prevent a Coup vs another player.
+         * @brie f A general can pay 5 Coins to prevent a Coup vs another player.
          * COST: 5 Coins.
          * @param player 
          */
-        void PreventCoup(Player& target);
+        void PreventCoup();
 
-        
+        /**
+         * @brief Reset the Block of prevent a coup when already prevented and next round.
+         * 
+         */
+        void resetPreventCoupBlock();
+
+
+        /**
+         * @brief Retrurn true if this general has blocked a coup already in this turn.
+         * 
+         * @return true 
+         * @return false 
+         */
+        bool hasBlockedCoupThisTurn() const;
     };
 }
 #endif // GENERAL_HPP

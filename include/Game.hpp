@@ -78,6 +78,25 @@ namespace coup {
              */
             void updateLastArrested(Player* p);
 
+            /**
+             * @brief goes through all general to ask them if the would like to prevent a coup
+             * 
+             * @param target 
+             * @return true 
+             * @return false 
+             */
+            bool dispatchCoupAttempt(Player& target);
+
+            /**
+             * @brief goes through all Judges to ask them if the would like to prevent a coup
+             * 
+             * @param target 
+             * @return true 
+             * @return false 
+             */
+            bool dispatchBribeAttempt();
+
+
 
     };
 

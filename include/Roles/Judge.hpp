@@ -6,6 +6,8 @@
 namespace coup {
 
     class Judge : public Player {
+        private:
+            bool prevented_bribe_this_turn = false;
         public:
         /**
          * @brief Construct a new Judge Player
@@ -20,14 +22,38 @@ namespace coup {
          * 
          */
         ~Judge();
+
+        /**
+         * @brief return the name of the role of the player.
+         * 
+         * @return std::string 
+         */
+        std::string role() const {
+            return "Judge";
+        }
         
         /**
-         * @brief A Judge can undo a bribe action of other player,
-         * what will make it lose it's 4 Coins.
-         * 
-         * @param target 
+         * @brief A Judge can can undo bribe actions of another players.
+         * This Action does not spend a turn and does not have a cost.
+         * @param target - the player that we would like to undo his bribe action.
          */
-        void undo(Player& target) override; 
+        void PreventBribe();
+
+
+        /**
+         * @brief  Reset the undo bribe block on a Judge after using it and moving to the next turn.
+         * 
+         */
+        void resetPreventBribeBlock();
+
+
+        /**
+         * @brief Retrurn true if this Judge has already blocked a Bribe in this turn.
+         * 
+         * @return true 
+         * @return false 
+         */
+        bool hasBlockedBribeThisTurn() const;
 
         
     };

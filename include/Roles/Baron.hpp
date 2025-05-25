@@ -21,6 +21,15 @@ namespace coup {
          * 
          */
         ~Baron();
+
+        /**
+         * @brief return the name of the role of the player.
+         * 
+         * @return std::string 
+         */
+        std::string role() const {
+            return "Baron";
+        }
         
         /**
          * @brief can ivest 3 Coins and get 6 Coins back.
@@ -29,6 +38,11 @@ namespace coup {
          */
         void invest();
 
+        /**
+         * @brief override the applySanction function from Player , that every time a player attacks a Baron
+         * , the baron will get 1 coin as a result of the sanction.
+         * 
+         */
         void applySanction() override;
         
     };

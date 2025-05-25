@@ -6,6 +6,10 @@
 namespace coup {
 
     class Merchant : public Player {
+        private:
+            
+            bool already_got_new_coin = false;
+        
         public:
             /**
              * @brief Construct a new Merchant Player
@@ -20,16 +24,31 @@ namespace coup {
              * 
              */
             ~Merchant();
+
+            /**
+             * @brief return the name of the role of the player.
+             * 
+             * @return std::string 
+             */
+            std::string role() const {
+                return "Merchant";
+            }
         
             /**
-             * @brief Checks if the Merchant has more than 3 Coins,
+             * @brief Checks if the Merchant has 3 Coins or More,
              * if it does add 1 Coins.
              * COST: NO COST.
              * 
              */
             void CoinOnNewTurn();
+
+            /**
+             * @brief when finish the current turn , reset the flag.
+             * 
+             */
+            void reset_got_new_coin();
         
-    };
+        };
 }
 
 

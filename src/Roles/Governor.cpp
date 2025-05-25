@@ -5,11 +5,13 @@
 
 namespace coup {
     
-   Governor::Governor(Game& game , const std::string& name) :
-   Player(game,name)
+    Governor::Governor(Game& game , const std::string& name) :
+    Player(game,name)
     {
         blocked_tax = false;
     }
+
+    Governor::~Governor() {}
 
     void Governor::tax() {
         if (game.turn() != this->getName()) 
