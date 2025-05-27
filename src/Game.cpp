@@ -5,8 +5,10 @@
 #include "../include/Roles/General.hpp"
 #include "../include/Roles/Judge.hpp"
 #include "../include/Roles/Merchant.hpp"
+#include "../include/Roles/Baron.hpp"
 
-
+#include <random>
+#include <ctime>
 #include <stdexcept>
 
 namespace coup {
@@ -23,6 +25,12 @@ namespace coup {
     {
         // already initialized everything in the list.
     }
+
+    std::vector<Player*>& Game::getPlayerslist() {
+        return players_list;
+    }
+
+
     
 
     void Game::addPlayer(Player* p){
@@ -47,6 +55,24 @@ namespace coup {
         p->eliminatePlayer();
         --active_players;
     }
+
+
+    void Game::initializePlayers(const std::vector<std::string>& names) {
+    std::mt19937 rng(static_cast<unsigned>(std::time(nullptr)));
+    std::uniform_int_distribution<int> dist(0, 5);
+
+    for (const std::string& name : names) {
+        int roleIndex = dist(rng);
+        switch (roleIndex) {
+            case 0: new Merchant(*this, name); break;
+            case 1: new Spy(*this, name); break;
+            case 2: new Baron(*this, name); break;
+            case 3: new Governor(*this, name); break;
+            case 4: new Judge(*this, name); break;
+            case 5: new General(*this, name); break;
+        }
+    }
+}
 
     
     std::vector<std::string> Game::players() const {
@@ -150,6 +176,7 @@ namespace coup {
         }
         // checks if the player to be play is a Merchant , if it is we should add it an Extra Coin.
         if (auto* n = dynamic_cast<Merchant*>(next)) {
+            if (n->coins()>=3)
             n->CoinOnNewTurn();
         }
        
@@ -176,10 +203,13 @@ namespace coup {
         this->last_arrested = p;
     }
 
-    bool Game::dispatchCoupAttempt(Player& target) {
+    bool Game::dispatchCoupAttempt(Player& target , Player& preventer) {
         //check if target is active
         if (!target.isActive()) 
             throw std::runtime_error("Target is not active");
+
+        if (&target == &preventer)
+            throw std::runtime_error("Cannot prevent coup on yourself");
         
         for (Player* p : players_list) {
             if (!p->isActive()) // if the player is not active , go the the next one.

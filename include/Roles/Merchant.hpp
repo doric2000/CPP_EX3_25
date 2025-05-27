@@ -30,9 +30,7 @@ namespace coup {
              * 
              * @return std::string 
              */
-            std::string role() const {
-                return "Merchant";
-            }
+            std::string role() const override;
         
             /**
              * @brief Checks if the Merchant has 3 Coins or More,

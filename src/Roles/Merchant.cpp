@@ -12,12 +12,18 @@ namespace coup {
         already_got_new_coin = false;
     }
 
+    Merchant::~Merchant() {}
+
     void Merchant::CoinOnNewTurn(){
         if(already_got_new_coin)
             throw std::runtime_error("Player already recieved a new coin this turn");
         
         this->incrementCoins(1);
         already_got_new_coin = true;
+    }
+
+    std::string Merchant::role() const {
+        return "Merchant";
     }
 
     void Merchant::reset_got_new_coin(){

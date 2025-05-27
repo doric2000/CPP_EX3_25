@@ -38,7 +38,10 @@ namespace coup {
     //can undo tax of another players
     void Governor::undo(Player& target) {
         if (game.turn() != this->getName()) 
-            throw std::runtime_error("Not your turn");
+           throw std::runtime_error("Not your turn");
+
+        if (&target == this)
+            throw std::runtime_error("Cannot undo on yourself");
         
         if (!target.isActive())
             throw std::runtime_error("Target is not active");

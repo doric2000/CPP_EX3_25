@@ -13,6 +13,14 @@ namespace coup {
         game.addPlayer(this); //adding a player to our game after initialization
     }
 
+    Player::~Player() {
+    
+    }
+
+    std::string Player::role() const {
+        return "Player";
+    }
+
     
     std::string Player::getName() const{
         return this->name;
@@ -88,6 +96,10 @@ namespace coup {
         last_action = ActionType::None; 
     }
 
+
+   void Player::undo(Player& target){
+        throw std::runtime_error("This role cannot undo actions");
+    } 
     
 
     void Player::gather(){
@@ -122,9 +134,15 @@ namespace coup {
     void Player::bribe(){
         if (game.turn() != this->getName()) 
             throw std::runtime_error("Not your turn");
+        //if must coup then dont let it do any other action
         if (this->isMustCoup()) {
             throw std::runtime_error("Player must perform coup when holding 10 or more coins");
         }
+        //if (havent done bribe in this turn)
+        if(this->getLastAction() == ActionType::Bribe)
+            throw std::runtime_error("Cannot use bribe twice in the same turn");   
+
+
         //check if the player has 4 coins
         if (this->coins() < 4)
             throw std::runtime_error("Not enough coins to bribe");   
@@ -141,10 +159,15 @@ namespace coup {
     void Player::arrest(Player& target) {
         if (game.turn() != this->getName()) 
             throw std::runtime_error("Not your turn");
-
+        
         if (this->isMustCoup()) {
             throw std::runtime_error("Player must perform coup when holding 10 or more coins");
         }
+
+        if (&target == this)
+        throw std::runtime_error("Cannot arrest yourself");
+
+
 
         if (getCantArrestStatus()){
             throw std::runtime_error("Spy has prevented you from using Arrest");
@@ -152,6 +175,8 @@ namespace coup {
         
         if (!target.isActive()) 
             throw std::runtime_error("Target is not active");
+
+
 
         // if hasnt been used twice
         if (game.getLastArrested() == &target)
@@ -181,6 +206,10 @@ namespace coup {
         if (this->isMustCoup()) {
             throw std::runtime_error("Player must perform coup when holding 10 or more coins");
         }
+
+        if (&target == this)
+            throw std::runtime_error("Cannot sanction yourself");
+
         
         if (!target.isActive()) 
             throw std::runtime_error("Target is not active");
@@ -204,11 +233,14 @@ namespace coup {
     void Player::coup(Player& target){
         if (game.turn() != this->getName())  
             throw std::runtime_error("Not your turn");
+
+        if (&target == this)
+            throw std::runtime_error("Cannot coup yourself");
         
         if (!target.isActive()) 
             throw std::runtime_error("Target is not active");
 
-        if (this->coins() < 10)
+        if (this->coins() < 7)
             throw std::runtime_error("Not enough coins to Coup");
 
         //check who can prevent and ask them if they would like to .
@@ -216,7 +248,7 @@ namespace coup {
         
         this->decrementCoins(7);
         // we make an event that will apply all general to block the coup
-        if (game.dispatchCoupAttempt(target)){
+        if (game.dispatchCoupAttempt(target,*this)){
             game.nextTurn();
             return;
         }
@@ -224,11 +256,6 @@ namespace coup {
         setLastAction(ActionType::Coup);
         game.nextTurn();
     }
-
-
-
-
-
 
 
 

@@ -49,7 +49,7 @@ namespace coup {
              * @brief Destroy the Player object
              * 
              */
-            virtual ~Player() = default;
+            virtual ~Player();
 
             /**
              * @brief Returns the Name of the Player
@@ -249,9 +249,7 @@ namespace coup {
              * USE_BY: judge can undo a bribe , Governor can undo tax.
              * @param target - the player to undo its action.
              */
-            virtual void undo(Player& target){
-                throw std::runtime_error("This role cannot undo actions");
-            } 
+            virtual void undo(Player& target);
 
             /**
              * @brief Applies sanction on a player , we will have to modify it on baron.

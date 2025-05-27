@@ -35,6 +35,13 @@ namespace coup {
              
             void eliminatePlayer(Player* p);
 
+            /**
+             * @brief after geting all name from GUI pioks a rule to each player randomly
+             * 
+             * @param names 
+             */
+            void initializePlayers(const std::vector<std::string>& names);
+
                 
             /**
              * @brief Returns the name of the ACTIVE players.
@@ -85,7 +92,7 @@ namespace coup {
              * @return true 
              * @return false 
              */
-            bool dispatchCoupAttempt(Player& target);
+            bool dispatchCoupAttempt(Player& target,Player& preventer);
 
             /**
              * @brief goes through all Judges to ask them if the would like to prevent a coup
@@ -96,6 +103,12 @@ namespace coup {
              */
             bool dispatchBribeAttempt();
 
+            /**
+             * @brief Get the Players Vector object
+             * 
+             * @return std::vector<Player*>& 
+             */
+            std::vector<Player*>& getPlayerslist();
 
 
     };

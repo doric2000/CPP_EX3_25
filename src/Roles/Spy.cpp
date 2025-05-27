@@ -30,6 +30,9 @@ namespace coup {
         if (game.turn() != this->getName()) 
             throw std::runtime_error("Not your turn");
         
+        if (&target == this)
+            throw std::runtime_error("Cannot Prevent arrest for yourself");
+
         if (this->isMustCoup()) 
             throw std::runtime_error("Player must perform coup when holding 10 or more coins");
         
