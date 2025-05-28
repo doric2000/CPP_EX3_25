@@ -19,6 +19,8 @@ private:
 public:
     TargetPopup(Game& game, Player* current);
     Player* chooseTarget(); // displays the window and returns the chosen target
+    void draw(sf::RenderWindow& targetWindow); 
+    void handleClick(const sf::Vector2f& mousePos);
 };
 
 }

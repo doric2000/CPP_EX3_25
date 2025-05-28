@@ -12,6 +12,7 @@ namespace coup {
              size_t current_player_index; //which player is playing rn.
              bool has_started; // indication if the game has started already.
              int active_players; // active players counter.
+             Player* lastBribed;
         
         public:
             /**
@@ -19,6 +20,12 @@ namespace coup {
              * 
              */
             Game();
+
+            /**
+             * @brief Destroy all the Players that has been created.
+             * 
+             */
+            ~Game();
             
             /**
              * @brief Called from the Constructor of a rule , adds a player to the list.
@@ -65,7 +72,7 @@ namespace coup {
             std::string turn() const;
 
             /**
-             * @brief Return the name of the winner after the current game ends.
+             * @brief Returns the name of the winner after the current game ends.
              * 
              * @return std::string 
              */
@@ -101,7 +108,7 @@ namespace coup {
              * @return true 
              * @return false 
              */
-            bool dispatchBribeAttempt();
+            bool dispatchBribeAttempt(Player& target);
 
             /**
              * @brief Get the Players Vector object
@@ -109,6 +116,12 @@ namespace coup {
              * @return std::vector<Player*>& 
              */
             std::vector<Player*>& getPlayerslist();
+
+            /**
+             * @brief Retur true if game is over else if not
+             * 
+             */
+            bool isGameOver() const;
 
 
     };

@@ -36,6 +36,7 @@ namespace coup {
             bool mustCoup = false; // if has 10 or more coins must do a coup.
             bool cant_arrest = false; // if a spy prevented from a player use arrest action.
             ActionType last_action = ActionType::None; // to have an indication of last action of each player
+            bool bribedThisTurn = false; // check if already has bribed on this turn to prevent using another action and then bribe again - suckest bug i had.
         public:
             /**
              * @brief Construct a new Player object
@@ -263,6 +264,41 @@ namespace coup {
              * 
              */
             void removeSanction();
+
+            /**
+             * @brief Returns if Player already have used bribe this turn
+             * 
+             * @return true 
+             * @return false 
+             */
+            bool hasBribedThisTurn() const { return bribedThisTurn; }
+            /**
+             * @brief Set the Bribed This Turn to true
+             * 
+             */
+            void setBribedThisTurn()    { bribedThisTurn = true; }
+
+            /**
+             * @brief clear the Bribe this turn after turn finish
+             * 
+             * @return * void 
+             */
+            void clearBribedThisTurn()  { bribedThisTurn = false; }
+
+
+            inline std::string actionToString(ActionType action) {
+                switch (action) {
+                    case ActionType::None: return "None";
+                    case ActionType::Gather: return "Gather";
+                    case ActionType::Tax: return "Tax";
+                    case ActionType::Bribe: return "Bribe";
+                    case ActionType::Arrest: return "Arrest";
+                    case ActionType::Sanction: return "Sanction";
+                    case ActionType::Coup: return "Coup";
+                    case ActionType::Invest: return "Invest";
+                    default: return "Unknown";
+            }
+}
     };
 
 }

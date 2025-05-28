@@ -54,6 +54,11 @@ int main() {
     GameScreen screen(game);
     screen.run();
 
+
+    if (screen.restartRequested) {
+    main(); // simple restart via recursion
+}
+
     // פה בהמשך תוכל להיכנס למסך המשחק האמיתי
     return 0;
 }

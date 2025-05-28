@@ -51,7 +51,7 @@ namespace coup {
         }
         
         if (blocked_tax)
-            throw std::runtime_error("Already used undo this turn");
+            throw std::runtime_error("Already used undo tax this turn");
 
         if (target.getLastAction() != ActionType::Tax)
             throw std::runtime_error("Can only undo if target just performed Tax");

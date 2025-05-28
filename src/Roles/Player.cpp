@@ -1,5 +1,6 @@
 #include "../../include/Roles/Player.hpp"
 #include <stdexcept>
+#include <iostream>
 
 namespace coup {
 
@@ -35,6 +36,8 @@ namespace coup {
     }
 
     void Player::decrementCoins(int c){
+        if (this->coins() - c < 0 )
+            throw std::runtime_error("A player cannot have less than 0 coins.");
         this->coins_amount -= c;
     }
 
@@ -131,30 +134,43 @@ namespace coup {
        game.nextTurn();
     }
 
-    void Player::bribe(){
-        if (game.turn() != this->getName()) 
+    void Player::bribe() {
+        // 1. Prevent two bribes in the same turn (even before any coin logic)
+        if (bribedThisTurn)
+            throw std::runtime_error("Cannot use bribe twice in the same turn");
+
+        // 2. Ensure it's this player's turn
+        if (game.turn() != this->getName())
             throw std::runtime_error("Not your turn");
-        //if must coup then dont let it do any other action
-        if (this->isMustCoup()) {
+
+        // 3. Must-coup rule
+        if (this->isMustCoup())
             throw std::runtime_error("Player must perform coup when holding 10 or more coins");
-        }
-        //if (havent done bribe in this turn)
-        if(this->getLastAction() == ActionType::Bribe)
-            throw std::runtime_error("Cannot use bribe twice in the same turn");   
 
-
-        //check if the player has 4 coins
+        // 4. Check funds
         if (this->coins() < 4)
-            throw std::runtime_error("Not enough coins to bribe");   
-        
+            throw std::runtime_error("You must have at least 4 coins to use Bribe");
+
+        // 5. Charge the coins up-front
         this->decrementCoins(4);
-        if (game.dispatchBribeAttempt()){
-            game.nextTurn();
-            return;
+
+        // 6. Mark that we attempted a bribe *before* any dispatch
+        this->setBribedThisTurn();
+
+        // 7. Let Judges attempt to block
+        bool blocked = game.dispatchBribeAttempt(*this);
+        if (blocked) {
+            // coins already spent, and we won't re-enter here because bribedThisTurn is true
+            throw std::runtime_error("Bribe was blocked by a Judge");
         }
+
+        // 8. Bribe succeeded: record action and grant extra turn
         setLastAction(ActionType::Bribe);
-        extra_turn = true;   
+        extra_turn = true;
     }
+
+
+
 
     void Player::arrest(Player& target) {
         if (game.turn() != this->getName()) 
@@ -188,8 +204,15 @@ namespace coup {
         if (target.coins() == 0){
             throw std::runtime_error("Cannot arrest a Player With 0 coins.");
         }
-        if (target.getName() == "Merchant")
+        if (target.role() == "Merchant"){
+            if (target.coins() < 2)
+                throw std::runtime_error("Cannot arrest a Merchant With 1 coin.");
             target.decrementCoins(2);
+        }
+        else if (target.role() == "General"){
+            this->incrementCoins(1);
+        }
+
         else{
             target.decrementCoins(1);
             this->incrementCoins(1);
@@ -214,23 +237,32 @@ namespace coup {
         if (!target.isActive()) 
             throw std::runtime_error("Target is not active");
                  
-        if (this->coins() < 3){
-            throw std::runtime_error("Not enough coins to sanction");
-        }
         if (target.isSanctioned()){ 
             throw std::runtime_error("Target already under Sanction");
         }
+            // Check coins requirement based on target type
+        if (target.role() == "Judge") {
+            if (target.coins() < 4) {
+                throw std::runtime_error("Cannot sanction a Judge With less than 4 coins.");
+            }
+            if (this->coins() < 4) { // Need 4 coins total for Judge (3 + 1)
+                throw std::runtime_error("Not enough coins to sanction a Judge");
+            }
+            this->decrementCoins(4); // Deduct all 4 coins at once for Judge
+        } else {
+            if (this->coins() < 3) {
+                throw std::runtime_error("Not enough coins to sanction");
+            }
+            this->decrementCoins(3);
+        }
 
-        this->decrementCoins(3);
-        if (target.getName() == "Judge")
-            this->decrementCoins(1);
         target.applySanction(); //baron will act different
         setLastAction(ActionType::Sanction);
         game.nextTurn();
     }
 
     //general can prevent it
-    void Player::coup(Player& target){
+    void Player::coup(Player& target) {
         if (game.turn() != this->getName())  
             throw std::runtime_error("Not your turn");
 
@@ -240,22 +272,13 @@ namespace coup {
         if (!target.isActive()) 
             throw std::runtime_error("Target is not active");
 
-        if (this->coins() < 7)
-            throw std::runtime_error("Not enough coins to Coup");
-
-        //check who can prevent and ask them if they would like to .
-        //also keep the option open.
-        
-        this->decrementCoins(7);
-        // we make an event that will apply all general to block the coup
-        if (game.dispatchCoupAttempt(target,*this)){
-            game.nextTurn();
-            return;
-        }
         target.eliminatePlayer();
         setLastAction(ActionType::Coup);
-        game.nextTurn();
     }
+
+
+
+
 
 
 

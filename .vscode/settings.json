@@ -58,6 +58,12 @@
         "semaphore": "cpp",
         "stop_token": "cpp",
         "thread": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "set": "cpp",
+        "csignal": "cpp",
+        "unordered_set": "cpp",
+        "fstream": "cpp",
+        "iomanip": "cpp",
+        "sstream": "cpp"
     }
 }

@@ -2,8 +2,8 @@
 
 #include <SFML/Graphics.hpp>
 #include <map>
+#include <string>
 
-// Forward declarations
 namespace coup {
     class Player;
     class Game;
@@ -17,6 +17,12 @@ private:
     sf::Font font;
     sf::Text turnLabel;
     sf::Text errorLabel;
+    sf::Text popupText;
+    sf::RectangleShape popupBox;
+    bool showPopup = false;           // whether any popup is shown
+    bool isEndgamePopup = false;     // whether current popup is "end game"
+
+
     sf::RectangleShape gatherButton;
     sf::Text gatherText;
     std::map<std::string, sf::RectangleShape> actionButtons;
@@ -27,13 +33,14 @@ private:
 public:
     GameScreen(Game& game);
     void run();
-
+    bool restartRequested = false;
 private:
     void renderPlayerList();
     void renderCurrentTurn();
     void renderGatherButton();
-    void handleClick(const sf::Vector2f& mousePos);
     void renderActionButtons(Player* current);
+    void renderPopup();  // ← חדש
+    void handleClick(const sf::Vector2f& mousePos);
     void handleActionClick(const sf::Vector2f& mousePos, Player* current);
 };
 

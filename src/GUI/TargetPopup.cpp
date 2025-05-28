@@ -1,18 +1,21 @@
 #include "GUI/TargetPopup.hpp"
 
-using namespace coup;
+namespace coup {
 
-TargetPopup::TargetPopup(Game& game, Player* current) : game(game){
-    font.loadFromFile("OpenSans.ttf");
+TargetPopup::TargetPopup(Game& game, Player* current)
+    : game(game) {
+
+    if (!font.loadFromFile("OpenSans.ttf")) {
+        throw std::runtime_error("Failed to load font");
+    }
 
     std::vector<Player*> allPlayers = game.getPlayerslist(); 
     int height = 60 + 40 * static_cast<int>(allPlayers.size());
-
     window.create(sf::VideoMode(300, height), "Choose Target");
 
     int y = 20;
     for (Player* p : allPlayers) {
-        if (!p->isActive() || p == current) continue;
+        if (!p || !p->isActive() || p == current) continue;
 
         sf::Text text;
         text.setFont(font);
@@ -26,41 +29,52 @@ TargetPopup::TargetPopup(Game& game, Player* current) : game(game){
 }
 
 Player* TargetPopup::chooseTarget() {
+    window.setActive(true);
+    sf::sleep(sf::milliseconds(50));
+
     while (window.isOpen()) {
         sf::Event event;
         while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed)
+            if (event.type == sf::Event::Closed) {
                 window.close();
-
-            if (event.type == sf::Event::MouseButtonPressed) {
-                sf::Vector2f pos(event.mouseButton.x, event.mouseButton.y);
-                for (auto& t : options) {
-                    if (t.getGlobalBounds().contains(pos)) {
-                        std::string name = t.getString();
-                        for (const auto& target : options) {
-                            if (target.getString() == name) {
-                                // Find the matching Player* using name
-                                // We assume Player names are unique
-                                for (Player* p : game.getPlayerslist()) {
-                                    if (p->getName() == name) {
-                                        selectedTarget = p;
-                                        break;
-                                    }
-                                }
-                                window.close();
-                                break;
-                            }
-                        }
-                    }
+            }
+            else if (event.type == sf::Event::MouseButtonPressed &&
+                     event.mouseButton.button == sf::Mouse::Left) {
+                sf::Vector2f mousePos(event.mouseButton.x, event.mouseButton.y);
+                handleClick(mousePos);
+                if (selectedTarget) {
+                    window.close();
                 }
             }
         }
 
         window.clear(sf::Color::Black);
-        for (auto& t : options)
-            window.draw(t);
+        draw(window);
         window.display();
+        sf::sleep(sf::milliseconds(10));
     }
 
     return selectedTarget;
 }
+
+void TargetPopup::handleClick(const sf::Vector2f& mousePos) {
+    for (const auto& text : options) {
+        if (text.getGlobalBounds().contains(mousePos)) {
+            std::string name = text.getString();
+            for (Player* p : game.getPlayerslist()) {
+                if (p && p->getName() == name) {
+                    selectedTarget = p;
+                    return;
+                }
+            }
+        }
+    }
+}
+
+void TargetPopup::draw(sf::RenderWindow& targetWindow) {
+    for (const auto& text : options) {
+        targetWindow.draw(text);
+    }
+}
+
+} // namespace coup

@@ -16,8 +16,9 @@ namespace coup {
     int Spy::inspectCoins(const Player& target) const {
         if (game.turn() != this->getName()) 
             throw std::runtime_error("Not your turn");
-        if (this->isMustCoup()) 
-            throw std::runtime_error("Player must perform coup when holding 10 or more coins");
+        // may look at the coins before doing a coup.
+            //if (this->isMustCoup()) 
+            //throw std::runtime_error("Player must perform coup when holding 10 or more coins");
         if (!target.isActive()) 
             throw std::runtime_error("Target is not active");
         
@@ -32,9 +33,10 @@ namespace coup {
         
         if (&target == this)
             throw std::runtime_error("Cannot Prevent arrest for yourself");
-
-        if (this->isMustCoup()) 
-            throw std::runtime_error("Player must perform coup when holding 10 or more coins");
+        
+        // may look at the coins before doing a coup.
+        //if (this->isMustCoup()) 
+            //throw std::runtime_error("Player must perform coup when holding 10 or more coins");
         
         if (!target.isActive())
             throw std::runtime_error("Target is not active");

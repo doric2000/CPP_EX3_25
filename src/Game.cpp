@@ -6,6 +6,7 @@
 #include "../include/Roles/Judge.hpp"
 #include "../include/Roles/Merchant.hpp"
 #include "../include/Roles/Baron.hpp"
+#include "../include/GUI/ReactionPopup.hpp"
 
 #include <random>
 #include <ctime>
@@ -21,9 +22,16 @@ namespace coup {
      *  has_started - if the game has started we cant add more players.
      */
     Game::Game() 
-    : players_list{} , last_arrested(nullptr) , current_player_index(0),has_started(false), active_players(0)
+    : players_list{} , last_arrested(nullptr) , current_player_index(0),has_started(false), active_players(0),lastBribed(nullptr)
     {
         // already initialized everything in the list.
+    }
+
+    Game::~Game() {
+        for (Player* p : players_list) {
+            delete p;
+        }
+        players_list.clear();
     }
 
     std::vector<Player*>& Game::getPlayerslist() {
@@ -105,11 +113,6 @@ namespace coup {
             else
                 has_started = true;
         }
-        else if (has_started && active_players ==1)
-        {
-                //end game than return the winner still have to understand the logic.
-                return;
-        }
         
         if (players_list.empty()) {
             throw std::runtime_error("No players in game");
@@ -123,6 +126,7 @@ namespace coup {
         }
 
 
+
         for (size_t step = 1; step <= players_list.size(); ++step)
         {
             int cand = (current_player_index+step) % players_list.size();
@@ -131,6 +135,7 @@ namespace coup {
                 break;
             }
         }
+
 
 
         //we have to clear all blocks when moving to next turn ,
@@ -179,21 +184,32 @@ namespace coup {
             if (n->coins()>=3)
             n->CoinOnNewTurn();
         }
+
+        //clear next action in the new player to be played and clear bribe this turn flag
+        next->clearBribedThisTurn();
+        next->clearLastAction();
+
+
        
     }
 
-    std::string Game::winner() const{
-        if (active_players !=1)
-            throw std::runtime_error("There is not a Winner yet.");
-        
-        for (Player* p : players_list)
-        {
-            if (p->isActive())
-                return p->getName();
+    std::string Game::winner() const {
+        std::string lastName = "";
+        int count = 0;
+
+        for (Player* p : players_list) {
+            if (p->isActive()) {
+                lastName = p->getName();
+                ++count;
+            }
         }
-        // if there is an internal error and we have accidently more than 1 active player hahaha
-        throw std::runtime_error("Internal error: active_players out of sync");
+
+        if (count != 1)
+            throw std::runtime_error("There is not a Winner yet.");
+
+        return lastName;
     }
+
 
     Player* Game::getLastArrested() const {
         return this->last_arrested;
@@ -203,64 +219,68 @@ namespace coup {
         this->last_arrested = p;
     }
 
-    bool Game::dispatchCoupAttempt(Player& target , Player& preventer) {
-        //check if target is active
-        if (!target.isActive()) 
+    bool Game::dispatchCoupAttempt(Player& target, Player& preventer) {
+        if (!target.isActive())
             throw std::runtime_error("Target is not active");
 
         if (&target == &preventer)
             throw std::runtime_error("Cannot prevent coup on yourself");
-        
-        for (Player* p : players_list) {
-            if (!p->isActive()) // if the player is not active , go the the next one.
-                continue;
-            
-            auto* gen = dynamic_cast<General*>(p);
-            if (!gen) 
-                continue;
-            
-            if (gen->coins() < 5 || gen->hasBlockedCoupThisTurn())
-                continue;
 
-             //bool answer = gui.askYesNo(
-            //std::string("General ") + gen->getName() +
-            //", block Coup on " + target.getName() + " for 5 coins?");
-            
-           //if (!answer)
-            //    continue;
-            
-            gen->PreventCoup();
-            return true;
+        for (Player* p : players_list) {
+            if (!p->isActive() || p == &preventer) continue;
+
+            auto* gen = dynamic_cast<General*>(p);
+            if (!gen) continue;
+
+            if (gen->coins() < 5 || gen->hasBlockedCoupThisTurn()) continue;
+
+            std::string question = "General " + gen->getName() +
+                ": Block Coup on " + target.getName() + " for 5 coins?";
+            ReactionPopup popup(question);
+
+            if (popup.ask()) {
+                gen->PreventCoup();
+                gen->decrementCoins(5);
+                return true;
+            }
         }
-    return false;  // לא נחסם על־ידי אף General
+
+        return false;
     }
 
-    bool Game::dispatchBribeAttempt() {
+
+    bool Game::dispatchBribeAttempt(Player& target) {
         for (Player* p : players_list) {
-            if (!p->isActive()) // if the player is not active , go the the next one.
-                continue;
-            
-            auto* jud = dynamic_cast<Judge*>(p);
-            if (!jud) 
-                continue;
-            
-            if (jud->hasBlockedBribeThisTurn())
+            if (!p->isActive() || p == &target)
                 continue;
 
-             //bool answer = gui.askYesNo(
-            //std::string("Judge ") + jud->getName() +
-            //", block Bribe on " + target.getName() + " ?");
-            
-           //if (!answer)
-            //    continue;
-            
-            jud->PreventBribe();
-            return true;
+            auto* jud = dynamic_cast<Judge*>(p);
+            if (!jud || jud->hasBlockedBribeThisTurn())
+                continue;
+
+            // Create popup prompt
+            std::string question = "Judge " + jud->getName() + 
+                ": Block bribe on " + target.getName() + "?";
+            ReactionPopup popup(question);
+
+            if (popup.ask()) {
+                jud->PreventBribe();
+                return true;
+            }
         }
-    return false;  // HASNT BLOCKED BY ANY JUDGE
+        return false;
+    }
+
+
+    bool Game::isGameOver() const {
+    int activeCount = 0;
+    for (Player* p : players_list)
+        if (p->isActive()) ++activeCount;
+
+    return activeCount == 1;
 }
 
-
+        
 
 
 }
