@@ -1,3 +1,6 @@
+/*
+ * Author: dor.cohen15@msmail.ariel.ac.il
+ */
 #ifndef SPY_HPP
 #define SPY_HPP
 

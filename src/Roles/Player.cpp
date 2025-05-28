@@ -1,3 +1,6 @@
+/*
+ * Author: dor.cohen15@msmail.ariel.ac.il
+ */
 #include "../../include/Roles/Player.hpp"
 #include <stdexcept>
 #include <iostream>
@@ -274,6 +277,7 @@ namespace coup {
 
         target.eliminatePlayer();
         setLastAction(ActionType::Coup);
+        game.nextTurn();
     }
 
 
@@ -284,4 +288,3 @@ namespace coup {
 
 };
 
-    

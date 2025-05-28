@@ -1,3 +1,6 @@
+/*
+ * Author: dor.cohen15@msmail.ariel.ac.il
+ */
 #ifndef MERCHANT_HPP
 #define MERCHANT_HPP
 

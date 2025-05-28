@@ -1,150 +1,84 @@
-<div dir="rtl", "lang"="he">
+# Coup Game Implementation
 
-# מטלה מספר 3 - קו (coup)
+This is an implementation of the Coup card game in C++, featuring both a game engine and a graphical user interface. The game implements various roles and actions in an object-oriented design pattern, with a focus on clean architecture and extensibility.
 
-### יושרה אקדמית
+## Project Structure
 
-במהלך העבודה על המטלות, מותר להתייעץ עם סטודנטים אחרים ולחפש מידע באינטרנט. עם זאת, חל איסור להעתיק קטעי קוד שלמים ממקורות חיצוניים, כולל סטודנטים אחרים, אתרי אינטרנט ומודלי בינה מלאכותית (כגון ChatGPT).
+The project is organized into several main components:
 
-יש לדווח על כל עזרה שקיבלתם, בין אם מדובר בהתייעצות עם סטודנטים אחרים או במידע שנמצא באינטרנט, בהתאם ל[תקנון היושר של המחלקה](https://www.ariel.ac.il/wp/cs/wp-content/uploads/sites/88/2020/08/Guidelines-for-Academic-Integrity.pdf).
-**במקרה של שימוש בכלי בינה מלאכותית (AI), יש לצרף את הפרומפטים שהוזנו ואת התשובות שהתקבלו**.
+### Core Game Engine (`include/` & `src/`)
+- `Game.hpp/cpp`: Main game logic and state management
+- `Player.hpp/cpp`: Base player class and common functionality
 
------
-* **מטרת המטלה:** הבנת החומר הנלמד בהרצאה החמישית והשישית כגון: כלל השלושה, ירושה וירטואלית וירושה רגילה.
-* **ההגשה ביחידים**.
+### Player Roles (`include/Roles/` & `src/Roles/`)
+- `Baron.hpp/cpp`: Special ability to invest and gain bonus from sanctions
+- `General.hpp/cpp`: Can prevent coups against other players
+- `Governor.hpp/cpp`: Can override and undo tax actions
+- `Judge.hpp/cpp`: Can block bribe attempts
+- `Merchant.hpp/cpp`: Gets bonus coins when having 3 or more coins
+- `Spy.hpp/cpp`: Can inspect other players' coins and prevent arrests
+- Each role inherits from the base `Player` class
 
-----
+### GUI Components (`include/GUI/` & `src/GUI/`)
+- `StartScreen`: Initial game screen
+- `PlayerSelectionScreen`: Player setup and role assignment
+- `GameScreen`: Main game interface
+- `ReactionPopup`: Displays action results
+- `TargetPopup`: Player targeting interface
 
-## הוראות הגשה ב-Moodle:
+## Technical Implementation
 
-במערכת Moodle יש להגיש **קובץ טקסט למשל (`submission.txt`)** המכיל 3 שורות בפורמט הבא:
+### Design Patterns
+- **Inheritance**: All roles inherit from base Player class
+- **Factory Pattern**: Used in player creation and role assignment
+- **Observer Pattern**: For GUI updates and game state changes
 
-1. **תעודת זהות** – מספר תעודת הזהות של הסטודנט.
-2. **קישור להגשה** – קישור למאגר ה-GitHub שבו נמצא הפרויקט.
-3. **פרטי ה-commit האחרון** – המחרוזת המזהה של ה-commit האחרון (`commit hash`) 
+### Key Features
+1. **Robust Turn Management**
+   - Handles player elimination
+   - Manages turn order and special actions
+   - Supports extra turns from bribe actions
 
- - דוגמה לקובץ הגשה תקין:
-    </div>
-```
-123456789
-https://github.com/example-user/my-assignment
-e3f1c1a 
-```
+2. **Action Validation**
+   - Prevents illegal moves
+   - Enforces game rules
+   - Handles edge cases
 
----
-<div dir="rtl", "lang"="he">
+3. **GUI Integration**
+   - SFML-based graphical interface
+   - Interactive player selection
+   - Real-time game state visualization
 
-קו (coup - הפיכה) הוא משחק קופסה עבור 2-6 שחקנים המשחקים אחד נגד השני כדי להישאר אחרונים על המגרש.
-במטלה זו נממש חלק מחוקי המשחק
+### Building and Running
 
----
-## חוקי המשחק
-בתחילת המשחק כל שחקן שולף קלף מהערימה. כל קלף מתאר  תפקיד אותו יכול לממש השחקן.  במרכז השולחן ישנה קופה של מטבעות. כל שחקן בתורו משחק לפי התפקיד אליו משתייך (פירוט התפקידים בהמשך) ויכול לקחת מטבעות בהתאם. מטרת המשחק היא להוציא לפועל "הפיכות" ולהדיח שחקנים אחרים מתפקידם. השחקן האחרון שנשאר בעל תפקיד מנצח.
+The project uses a Makefile build system with the following targets:
+- `make all`: Build the main game
+- `make test`: Run unit tests
+- `make clean`: Clean build artifacts
+- `make valgrind`: Run memory leak checks
 
- 
-- לכל שחקן יש שם, תפקיד ומטבעות. 
-בכל תור יכול שחקן, בלי קשר לתפקידו, לבצע את אחת מהפעולות הבאות:
+Dependencies:
+- C++17 or later
+- SFML library for graphics
+- Make build system
 
-</div>
-<div dir = "rtl">
+## Testing
 
+Comprehensive test suite covering:
+- Basic game mechanics
+- Role-specific abilities
+- Edge cases and error conditions
+- Player interactions
+- Game state management
 
-- איסוף משאבים (gather) - השחקן מקבל מטבע אחד מהקופה. לפעולה זו אין עלות והיא ניתנת לחסימה באמצעות חרם.
-- מס (tax) - השחקן מקבל שני מטבעות מהקופה. פעולה זו אינה עולה דבר, אך תפקידים מסוימים או פעולות מסוימות יכולים לחסום אותה.
-- שוחד (bribe) - השחקן משלם 4 מטבעות כדי לבצע פעולה נוספת בתורו.
-- מעצר (arrest) - השחקן בוחר שחקן אחר ולוקח ממנו מטבע אחד. לא ניתן להשתמש בה על אותו שחקן פעמיים ברציפות.
-- חרם (sanction) - השחקן בוחר שחקן אחר ומונע ממנו להשתמש בפעולות כלכליות (gather, tax) עד לתורו הבא. עלות פעולה זו היא 3 מטבעות.
-- הפיכה (coup) - השחקן בוחר שחקן אחר ומדיח אותו לחלוטין מהמשחק. עלות פעולה זו היא 7 מטבעות, והיא ניתנת לחסימה בתנאים מסוימים בלבד.
-  
-כל פעולה צריכה לעדכן את מספר המטבעות אותם מחזיק השחקן בהתאם.  
-אם הפעולה לא חוקית, יש לזרוק חריגה מתאימה.
- 
-</div>
-<div dir = "rtl">
- 
- ---
+The tests are organized into 33 test cases, each focusing on specific aspects of the game mechanics and role interactions.
 
- <div dir = "rtl">
-  
-#### תפקידים
-למשחק יש מספר תפקידים, ולכל אחד מהם יכולות ייחודיות:
+## Documentation
 
-</div>
-<div dir = "rtl">
+The codebase is thoroughly documented with:
+- Class and method documentation
+- Function parameter descriptions
+- Implementation notes
+- Game rule explanations
 
-
-- נציב (Governor) - לוקח 3 מטבעות מהקופה במקום 2 כשהוא משתמש בפעולת מס (tax). בנוסף, הוא יכול לבטל פעולת מס (tax) של שחקנים אחרים.
-
-- מרגל (Spy) - יכול לראות את כמות המטבעות של שחקן אחר ולמנוע ממנו להשתמש בפעולת מעצר (arrest) בתורו הבא. פעולה זו אינה עולה מטבעות ואינה נחשבת לתור.
-
-- ברון (Baron) - יכול "להשקיע" 3 מטבעות ולקבל בתמורה 6 מטבעות. בנוסף, אם הוא מותקף באמצעות חרם (sanction), הוא מקבל מטבע אחד כפיצוי (כלומר, מכל התהליך הוא יכול להפסיד לכל היותר מטבע אחד אם השתמש במס).
-
-- גנרל (General) - יכול לשלם 5 מטבעות כדי למנוע הפיכה (coup) נגד שחקן אחר (או נגד עצמו) שימו לב שבמקרה הזה השחקן שביצע את ההפיכה מפסיד את המטבעות ששילם. בנוסף, אם הוא נפגע באמצעות מעצר (arrest), הוא מקבל בחזרה את המטבע שנלקח ממנו.
-
-- שופט (Judge) - יכול לבטל פעולת שוחד (bribe) של שחקן אחר, מה שגורם לו להפסיד את 4 המטבעות ששילם. בנוסף, אם הוא מותקף באמצעות חרם (sanction), השחקן שהטיל עליו את החרם צריך לשלם מטבע נוסף לקופה.
-
-- סוחר (Merchant) - אם הוא מתחיל תור עם 3 מטבעות לפחות, הוא מקבל מטבע נוסף בחינם. בנוסף, אם הוא מותקף באמצעות מעצר (arrest), הוא משלם שני מטבעות לקופה במקום לאבד אחד לשחקן אחר.
-
-  </div>
-<div dir = "rtl">
-
-#### הערות:
-
-- יכולים להיות שני שחקנים או יותר בעלי אותו תפקיד - לא קורה שום דבר מיוחד במצב זה.
-
-- אם שחקן מחזיק 10 מטבעות בתחילת תורו, הוא חייב לבצע הפיכה באותו תור
-
-- פעולות שמבטלות פעולות אחרות לא צריכות להמתין לתור של השחקן המבצע אותן ולא מבזבזות לו תור אלא מתבצעות "בזמן אמת". במשחק שלנו לא נממש תגובות "בזמן אמת" לכן ממשו את הפתרון הבא:  
-שחקן שביצע פעולה שניתנת לחסימה, ניתן לחסום את הפעולה שלו עד שהגיע תורו לשחק שוב. למשל, אם שחקן השתמש בפעולה "שוחד", אז שופט יכול לחסום את הפעולה למרות שזה לא התור שלו.
-
-#### לוח המשחק 
-לכל משחק יש את השחקנים שמשחקים בו, מה מצבו של כל שחקן ובסיום המשחק, מי המנצח. בנוסף, המשחק יודע תור מי עכשיו. התורות נקבעים לפי סדר ההצטרפות למשחק.
-
-יש לממש את השיטות
-
-- תור - `turn` - הדפסת שם השחקן אשר תורו לשחק כעת.
-- שחקנים פעילים - `players` - השיטה מחזירה את שמות השחקנים שפעילים כעת במשחק.
-- מנצח - `winner` - השיטה מחזירה את שם המנצח. אם המשחק עדיין פעיל, השיטה תזרוק שגיאה.
-
-</div>
-<div dir = "rtl">
- 
----
-
-</div>
-<div dir = "rtl">
-
-#### ממשק גרפי (GUI) -
-הוסיפו לפרויקט שלכם ממשק גרפי המאפשר הצגה קומפקטית של המשחק בעת הרצת הדמו. ניתן להניח שכלל השחקנים משחקים דרך אותו המסך, לכן מספק שה-GUI יכול להציג את התפריט בהתאם לתור של השחקן הנוכחי.
-
-לצורך החלק הזה אתם יכולים להשתמש בספריות [QT](https://www.qt.io/product/qt6/qml-book/ch17-qtcpp-qtcpp) ו-[SFML](https://www.sfml-dev.org/). אתם כמובן רשאים להשתמש בספריות אחרות שאתם מוצאים לנכון.
-
-</div>
-<div dir = "rtl">
-
---- 
-#### דרישות נוספות:
-- יש לכתוב בדיקות מקיפות ולהתייחס לכל מקרי הקצה האפשריים!
-- לצורך הדגמת המשחק, מצורף לכם קובץ בשם ``Demo.cpp`` המדגים את המשחק. **שימו לב** שהקובץ הזה הוא לצורך דוגמה בלבד!
-- חשוב לוודא שה-repository ציבורי.
-- כתבו בתחילת **כל** קובץ את כתובת המייל שלכם.
-- כתבו קוד נקי, מסודר, מחולק לקבצים, מודולרי, מתועד בצורה מספקת וכמובן בדיקות יחידה עבור כל הפונקציות.
-- בדקו את תקינות הקלט ולזרוק חריגות מתאימות במידת הצורך.
-- הוסיפו קובץ עם הפומקציה הראשית `main` בו צרו הדגמה של עבודה עם המחלקות ופונקציות שיצרתם.
-- לשימושכם הקישור הבא [doctest](https://github.com/doctest/doctest) בו תוכלו לראות דוגמאות נוספות לשימוש בסיפריה זו.
-- יש לבדוק שאין זליגת זיכרון באמצעות `valgrind`.
-- יש לצרף גם קובץ `README` עם הסבר על פרויקט, על חלוקה למחלקות וקבצים וכל מידע אחר רלוונטי.
-
-
-#### קובץ `Makefile`:
-הוסיפו לפרויקט קובץ `Makefile` הכולל את הפקודות הבאות:
-- הפקודה `make Main` – להרצת קובץ ההדגמה.
-- הפקודה `make test` – להרצת בדיקות היחידה.
-- הפקודה `make valgrind` – בדיקת זליגת זיכרון באמצעות valgrind.
-- הפקודה `make clean` - מוחקת את כל הקבצים הלא רלוונטיים לאחר ההרצה.
-
-
-בהצלחה!
-
-</div>
-
+Each source file contains detailed comments explaining the purpose and functionality of the code.

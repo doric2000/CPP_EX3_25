@@ -1,3 +1,6 @@
+/*
+ * Author: dor.cohen15@msmail.ariel.ac.il
+ */
 #ifndef GAME_HPP
 #define GAME_HPP
 #include <vector>

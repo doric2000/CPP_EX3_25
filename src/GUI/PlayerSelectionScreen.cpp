@@ -1,3 +1,6 @@
+/*
+ * Author: dor.cohen15@msmail.ariel.ac.il
+ */
 #include "../../include/GUI/PlayerSelectionScreen.hpp"
 #include <iostream>
 #include <set>

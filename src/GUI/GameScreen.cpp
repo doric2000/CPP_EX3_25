@@ -1,3 +1,6 @@
+/*
+ * Author: dor.cohen15@msmail.ariel.ac.il
+ */
 #include "GUI/GameScreen.hpp"
 #include "GUI/TargetPopup.hpp"
 #include "Player.hpp"
@@ -329,9 +332,7 @@ void GameScreen::handleActionClick(const sf::Vector2f& mousePos, Player* current
                         errorLabel.setString("Coup was blocked by a General!");
                         game.nextTurn();
                     } else {
-                        current->setLastAction(ActionType::Coup); // only if executed
-                        target->eliminatePlayer();
-                        game.nextTurn();
+                        current->coup(*target);
                     }
                 }
 

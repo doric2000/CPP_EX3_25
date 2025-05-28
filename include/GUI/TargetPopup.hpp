@@ -1,3 +1,7 @@
+/*
+ * Author: dor.cohen15@msmail.ariel.ac.il
+ */
+
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <vector>

@@ -1,3 +1,6 @@
+/*
+ * Author: dor.cohen15@msmail.ariel.ac.il
+ */
 #include "GUI/StartScreen.hpp"
 #include "GUI/PlayerSelectionScreen.hpp"
 #include "GUI/GameScreen.hpp"

@@ -1,3 +1,6 @@
+/*
+ * Author: dor.cohen15@msmail.ariel.ac.il
+ */
 #ifndef PLAYER_HPP
 #define PLAYER_HPP
 #include <string>

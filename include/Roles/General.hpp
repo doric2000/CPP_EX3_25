@@ -1,3 +1,6 @@
+/*
+ * Author: dor.cohen15@msmail.ariel.ac.il
+ */
 #ifndef GENERAL_HPP
 #define GENERAL_HPP
 

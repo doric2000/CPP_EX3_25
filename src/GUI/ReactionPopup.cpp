@@ -1,3 +1,6 @@
+/*
+ * Author: dor.cohen15@msmail.ariel.ac.il
+ */
 #include "GUI/ReactionPopup.hpp"
 #include <stdexcept>
 

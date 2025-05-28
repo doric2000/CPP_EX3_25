@@ -1,3 +1,6 @@
+/*
+ * Author: dor.cohen15@msmail.ariel.ac.il
+ */
 #include "../../include/Roles/Player.hpp"
 #include "../../include/Game.hpp"
 #include "../../include/Roles/Governor.hpp"

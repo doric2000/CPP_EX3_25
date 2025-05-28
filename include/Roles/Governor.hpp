@@ -1,3 +1,6 @@
+/*
+ * Author: dor.cohen15@msmail.ariel.ac.il
+ */
 #ifndef GOVERNOR_HPP
 #define GOVERNOR_HPP
 

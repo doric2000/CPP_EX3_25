@@ -1,3 +1,6 @@
+/*
+ * Author: dor.cohen15@msmail.ariel.ac.il
+ */
 #include "GUI/StartScreen.hpp"
 
 StartScreen::StartScreen() : window(sf::VideoMode(600, 400), "Coup - Start") {

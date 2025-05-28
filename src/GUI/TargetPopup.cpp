@@ -1,3 +1,7 @@
+/*
+ * Author: dor.cohen15@msmail.ariel.ac.il
+ */
+
 #include "GUI/TargetPopup.hpp"
 
 namespace coup {
